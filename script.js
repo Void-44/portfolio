@@ -29,22 +29,34 @@ const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 // Make project cards clickable (open data-live)
-function openProject(card) {
-  const live = card.getAttribute('data-live');
-  const code = card.getAttribute('data-code');
-  if (live && live !== '#') {
-    window.open(live, '_blank', 'noopener');
-    return;
-  }
-  // if no live link, offer to open code if it exists
-  if (code && code !== '#') {
-    window.open(code, '_blank', 'noopener');
-    return;
-  }
-  // fallback toast
-  notify("Project link not set — edit data-live / data-code in index.html");
-}
+// FINAL FIX — Handles card clicks & button clicks correctly
 
+document.querySelectorAll("article[data-live], article[data-code]").forEach(card => {
+
+  // When card itself is clicked
+  card.addEventListener("click", () => {
+    const live = card.dataset.live;
+    const code = card.dataset.code;
+
+    if (live && live !== "#") {
+      window.open(live, "_blank");
+      return;
+    }
+
+    if (code && code !== "#") {
+      window.open(code, "_blank");
+      return;
+    }
+  });
+
+  // Stop buttons inside the card from triggering the card click
+  card.querySelectorAll("a").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation(); // ← THIS IS THE FIX
+    });
+  });
+
+});
 // small toast notifier
 function notify(text) {
   const t = document.createElement('div');
